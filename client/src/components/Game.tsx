@@ -7,6 +7,59 @@ import Paddle from "./Paddle";
 import Ball from "./Ball";
 import Bricks from "./Bricks";
 
+// Particle field component
+function ParticleField() {
+  const particleCount = 30;
+  const particles = Array.from({ length: particleCount }, (_, i) => ({
+    id: i,
+    x: (Math.random() - 0.5) * 20,
+    y: (Math.random() - 0.5) * 15,
+    z: Math.random() * -5,
+    size: 0.02 + Math.random() * 0.03,
+    speed: 0.5 + Math.random() * 0.5
+  }));
+
+  return (
+    <group>
+      {particles.map((particle) => (
+        <ParticleComponent key={particle.id} particle={particle} />
+      ))}
+    </group>
+  );
+}
+
+function ParticleComponent({ particle }: { particle: any }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    if (meshRef.current) {
+      // Float animation
+      meshRef.current.position.y += Math.sin(state.clock.elapsedTime * particle.speed + particle.id) * 0.01;
+      meshRef.current.position.x += Math.cos(state.clock.elapsedTime * particle.speed * 0.5 + particle.id) * 0.005;
+      
+      // Twinkling effect
+      const opacity = 0.3 + Math.sin(state.clock.elapsedTime * 2 + particle.id) * 0.3;
+      (meshRef.current.material as THREE.MeshStandardMaterial).opacity = Math.max(0.1, opacity);
+    }
+  });
+
+  return (
+    <mesh 
+      ref={meshRef} 
+      position={[particle.x, particle.y, particle.z]}
+    >
+      <sphereGeometry args={[particle.size, 8, 8]} />
+      <meshStandardMaterial 
+        color="#ffffff"
+        emissive="#aaccff"
+        emissiveIntensity={0.6}
+        transparent
+        opacity={0.5}
+      />
+    </mesh>
+  );
+}
+
 enum Controls {
   left = 'left',
   right = 'right',
@@ -31,6 +84,9 @@ export interface GameData {
   paddlePosition: THREE.Vector3;
   bricks: { position: THREE.Vector3; destroyed: boolean; color: string }[];
 }
+
+// Export game data for UI access
+export let currentGameData: GameData;
 
 export default function Game() {
   const { phase, start, restart, end } = useGame();
@@ -236,6 +292,9 @@ export default function Game() {
       newData.ballPosition = newBallPos;
       newData.ballVelocity = newBallVel;
       
+      // Update exported game data
+      currentGameData = newData;
+      
       return newData;
     });
 
@@ -247,10 +306,16 @@ export default function Game() {
 
   return (
     <group>
-      {/* Game boundaries (invisible) */}
-      <mesh position={[0, 0, -0.1]} visible={false}>
-        <planeGeometry args={[GAME_WIDTH, GAME_HEIGHT]} />
-        <meshBasicMaterial color="#222" />
+      {/* Atmospheric background */}
+      <mesh position={[0, 0, -2]} rotation={[0, 0, 0]}>
+        <planeGeometry args={[GAME_WIDTH * 2, GAME_HEIGHT * 2]} />
+        <meshStandardMaterial 
+          color="#001122"
+          transparent
+          opacity={0.7}
+          emissive="#001133"
+          emissiveIntensity={0.1}
+        />
       </mesh>
 
       {/* Game components */}
@@ -271,26 +336,83 @@ export default function Game() {
         brickHeight={0.4}
       />
       
-      {/* Game boundaries visualization */}
+      {/* Enhanced game boundaries */}
       <group>
-        {/* Left wall */}
-        <mesh position={[-GAME_WIDTH/2 - 0.1, 0, 0]}>
-          <boxGeometry args={[0.2, GAME_HEIGHT + 1, 0.2]} />
-          <meshStandardMaterial color="#444" />
-        </mesh>
+        {/* Left wall with glow */}
+        <group position={[-GAME_WIDTH/2 - 0.1, 0, 0]}>
+          <mesh>
+            <boxGeometry args={[0.3, GAME_HEIGHT + 1, 0.3]} />
+            <meshStandardMaterial 
+              color="#4a90e2" 
+              emissive="#2a5aa2"
+              emissiveIntensity={0.3}
+              metalness={0.7}
+              roughness={0.3}
+            />
+          </mesh>
+          <mesh position={[0, 0, 0.2]}>
+            <boxGeometry args={[0.1, GAME_HEIGHT + 1, 0.1]} />
+            <meshStandardMaterial 
+              color="#aaccff"
+              emissive="#aaccff"
+              emissiveIntensity={0.8}
+              transparent
+              opacity={0.6}
+            />
+          </mesh>
+        </group>
         
-        {/* Right wall */}
-        <mesh position={[GAME_WIDTH/2 + 0.1, 0, 0]}>
-          <boxGeometry args={[0.2, GAME_HEIGHT + 1, 0.2]} />
-          <meshStandardMaterial color="#444" />
-        </mesh>
+        {/* Right wall with glow */}
+        <group position={[GAME_WIDTH/2 + 0.1, 0, 0]}>
+          <mesh>
+            <boxGeometry args={[0.3, GAME_HEIGHT + 1, 0.3]} />
+            <meshStandardMaterial 
+              color="#4a90e2" 
+              emissive="#2a5aa2"
+              emissiveIntensity={0.3}
+              metalness={0.7}
+              roughness={0.3}
+            />
+          </mesh>
+          <mesh position={[0, 0, 0.2]}>
+            <boxGeometry args={[0.1, GAME_HEIGHT + 1, 0.1]} />
+            <meshStandardMaterial 
+              color="#aaccff"
+              emissive="#aaccff"
+              emissiveIntensity={0.8}
+              transparent
+              opacity={0.6}
+            />
+          </mesh>
+        </group>
         
-        {/* Top wall */}
-        <mesh position={[0, GAME_HEIGHT/2 + 0.1, 0]}>
-          <boxGeometry args={[GAME_WIDTH + 0.4, 0.2, 0.2]} />
-          <meshStandardMaterial color="#444" />
-        </mesh>
+        {/* Top wall with glow */}
+        <group position={[0, GAME_HEIGHT/2 + 0.1, 0]}>
+          <mesh>
+            <boxGeometry args={[GAME_WIDTH + 0.6, 0.3, 0.3]} />
+            <meshStandardMaterial 
+              color="#4a90e2" 
+              emissive="#2a5aa2"
+              emissiveIntensity={0.3}
+              metalness={0.7}
+              roughness={0.3}
+            />
+          </mesh>
+          <mesh position={[0, 0, 0.2]}>
+            <boxGeometry args={[GAME_WIDTH + 0.4, 0.1, 0.1]} />
+            <meshStandardMaterial 
+              color="#aaccff"
+              emissive="#aaccff"
+              emissiveIntensity={0.8}
+              transparent
+              opacity={0.6}
+            />
+          </mesh>
+        </group>
       </group>
+      
+      {/* Particle effects */}
+      <ParticleField />
     </group>
   );
 }

@@ -52,32 +52,103 @@ export default function GameUI() {
       {/* Ultra HD Game start screen */}
       {phase === "ready" && (
         <div className="fixed inset-0 flex items-center justify-center z-40 overflow-hidden">
-          {/* Ultra HD Animated background */}
+          {/* Ultra HD Realistic Starfield Background */}
           <div className="absolute inset-0">
-            {/* Deep space background with multiple gradients */}
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-              <div className="absolute inset-0 bg-gradient-to-tl from-indigo-900/50 via-transparent to-cyan-900/50"></div>
-              <div className="absolute inset-0 bg-gradient-to-tr from-purple-900/30 via-transparent to-pink-900/30"></div>
+            {/* Deep space background with nebula effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-indigo-900 to-black">
+              <div className="absolute inset-0 bg-gradient-to-tl from-purple-900/40 via-transparent to-blue-900/30"></div>
+              <div className="absolute inset-0 bg-gradient-to-tr from-pink-900/20 via-transparent to-cyan-900/20"></div>
+              
+              {/* Nebula clouds */}
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={`nebula-${i}`}
+                  className="absolute rounded-full opacity-20 animate-pulse"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                    width: `${100 + Math.random() * 200}px`,
+                    height: `${80 + Math.random() * 150}px`,
+                    background: `radial-gradient(ellipse, ${
+                      ['#4c1d95', '#7c2d12', '#0f766e', '#1e293b', '#581c87'][Math.floor(Math.random() * 5)]
+                    }40, transparent)`,
+                    filter: `blur(${20 + Math.random() * 30}px)`,
+                    animationDelay: `${Math.random() * 5}s`,
+                    animationDuration: `${8 + Math.random() * 12}s`
+                  }}
+                />
+              ))}
             </div>
             
-            {/* Ultra HD Particle system */}
-            {Array.from({ length: 150 }).map((_, i) => (
+            {/* Ultra HD Realistic Stars */}
+            {Array.from({ length: 400 }).map((_, i) => {
+              const size = Math.random();
+              const twinkleSpeed = 2 + Math.random() * 4;
+              const brightness = 0.3 + Math.random() * 0.7;
+              
+              return (
+                <div
+                  key={`star-${i}`}
+                  className="absolute"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                    width: size < 0.1 ? '1px' : size < 0.3 ? '2px' : size < 0.7 ? '3px' : '4px',
+                    height: size < 0.1 ? '1px' : size < 0.3 ? '2px' : size < 0.7 ? '3px' : '4px',
+                    background: size > 0.8 ? '#ffffff' : size > 0.6 ? '#e0e7ff' : size > 0.4 ? '#ddd6fe' : '#f3e8ff',
+                    borderRadius: '50%',
+                    opacity: brightness,
+                    animation: `twinkle ${twinkleSpeed}s ease-in-out infinite`,
+                    animationDelay: `${Math.random() * 3}s`,
+                    boxShadow: size > 0.7 ? `0 0 ${4 + Math.random() * 6}px currentColor` : 'none',
+                    filter: size > 0.8 ? 'brightness(1.5)' : 'none'
+                  }}
+                />
+              );
+            })}
+            
+            {/* Shooting stars */}
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={`shooting-star-${i}`}
+                className="absolute"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 50}%`,
+                  width: '2px',
+                  height: '2px',
+                  background: '#ffffff',
+                  borderRadius: '50%',
+                  animation: `shootingStar ${8 + Math.random() * 12}s linear infinite`,
+                  animationDelay: `${Math.random() * 10}s`,
+                  boxShadow: '0 0 6px #ffffff, 0 0 12px #ffffff, 0 0 18px #ffffff'
+                }}
+              >
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-white to-transparent opacity-80" style={{
+                  width: '40px',
+                  height: '1px',
+                  transform: 'rotate(45deg) translateX(-20px)'
+                }} />
+              </div>
+            ))}
+            
+            {/* Ultra HD Floating particles with realistic physics */}
+            {Array.from({ length: 80 }).map((_, i) => (
               <div
                 key={`particle-${i}`}
-                className="absolute rounded-full animate-pulse"
+                className="absolute rounded-full"
                 style={{
                   left: `${Math.random() * 100}%`,
                   top: `${Math.random() * 100}%`,
-                  width: `${1 + Math.random() * 4}px`,
-                  height: `${1 + Math.random() * 4}px`,
+                  width: `${1 + Math.random() * 3}px`,
+                  height: `${1 + Math.random() * 3}px`,
                   background: `radial-gradient(circle, ${
-                    ['#00f5ff', '#ff6b9d', '#00ff88', '#ffeb3b', '#9c27b0', '#ff4081'][Math.floor(Math.random() * 6)]
+                    ['#00f5ff', '#ff6b9d', '#00ff88', '#ffeb3b', '#9c27b0', '#ff4081', '#ffffff'][Math.floor(Math.random() * 7)]
                   }, transparent)`,
-                  animationDelay: `${Math.random() * 3}s`,
-                  animationDuration: `${2 + Math.random() * 4}s`,
-                  boxShadow: `0 0 10px ${
-                    ['#00f5ff', '#ff6b9d', '#00ff88', '#ffeb3b', '#9c27b0', '#ff4081'][Math.floor(Math.random() * 6)]
-                  }80`
+                  animation: `particleDrift ${15 + Math.random() * 20}s linear infinite`,
+                  animationDelay: `${Math.random() * 10}s`,
+                  opacity: 0.4 + Math.random() * 0.6,
+                  boxShadow: `0 0 ${2 + Math.random() * 4}px currentColor`
                 }}
               />
             ))}

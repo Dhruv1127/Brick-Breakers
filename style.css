@@ -308,6 +308,7 @@ body {
     box-shadow: 0 8px 25px rgba(76, 110, 245, 0.3);
     pointer-events: auto;
     margin: 10px;
+    min-width: 120px;
 }
 
 .start-btn:hover, .restart-btn:hover, .back-btn:hover {
@@ -321,16 +322,29 @@ body {
 }
 
 .back-btn:hover {
+    transform: translateY(-3px);
     box-shadow: 0 12px 35px rgba(108, 117, 125, 0.5);
 }
 
 /* Home Button */
 .home-btn {
     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    padding: 15px 40px;
+    border-radius: 30px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
     box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+    pointer-events: auto;
+    margin: 10px;
+    min-width: 120px;
 }
 
 .home-btn:hover {
+    transform: translateY(-3px);
     box-shadow: 0 12px 35px rgba(40, 167, 69, 0.5);
 }
 
@@ -428,28 +442,41 @@ body {
 .reset-btn {
     background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
     border: none;
-    padding: 12px 30px;
-    border-radius: 25px;
+    padding: 15px 40px;
+    border-radius: 30px;
     color: white;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+    pointer-events: auto;
+    margin: 10px;
+    min-width: 120px;
 }
 
 .reset-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.5);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(255, 193, 7, 0.5);
 }
 
 /* Button Groups */
-.start-buttons, .level-buttons, .game-over-buttons {
+.start-buttons, .level-buttons, .game-over-buttons, .settings-buttons {
     display: flex;
     gap: 15px;
     justify-content: center;
     flex-wrap: wrap;
     margin-top: 20px;
+}
+
+/* Ensure all buttons in groups have consistent styling */
+.start-buttons .home-btn,
+.level-buttons .home-btn,
+.game-over-buttons .home-btn,
+.settings-buttons .home-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Game Over Screen */

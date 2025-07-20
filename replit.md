@@ -1,18 +1,18 @@
 # Overview
 
-This is a Brick Breaker Game built with React, TypeScript, and Three.js. The application is a full-stack web application featuring a 3D game interface with modern UI components, state management, and audio integration. The game appears to be in the early stages of development with a foundation for a 3D game experience.
+This is a Brick Breaker Game built with pure HTML, CSS, and JavaScript. The application has been converted from a React/Three.js project to a vanilla web application featuring a 2D canvas-based game interface with modern CSS styling, particle effects, and audio integration. The game is a complete brick breaker experience with scoring, lives, and responsive controls.
 
 # System Architecture
 
 The application follows a modern full-stack architecture with clear separation between frontend and backend components:
 
 ## Frontend Architecture
-- **Framework**: React 18 with TypeScript for type safety
-- **3D Graphics**: Three.js with React Three Fiber for 3D rendering
-- **UI Components**: Radix UI primitives with custom shadcn/ui components
-- **Styling**: Tailwind CSS with custom CSS variables for theming
-- **State Management**: Zustand for lightweight state management
-- **Data Fetching**: TanStack Query (React Query) for server state management
+- **Framework**: Pure HTML, CSS, and JavaScript (no frameworks)
+- **Graphics**: HTML5 Canvas for 2D game rendering
+- **UI**: Custom CSS with gradients, animations, and responsive design
+- **Styling**: Modern CSS with flexbox, grid, and advanced animations
+- **State Management**: JavaScript classes for game state management
+- **Audio**: HTML5 Audio API for sound effects and background music
 
 ## Backend Architecture
 - **Runtime**: Node.js with Express.js framework
@@ -24,10 +24,10 @@ The application follows a modern full-stack architecture with clear separation b
 # Key Components
 
 ## Game System
-- **Game State Management**: Zustand store managing game phases (ready, playing, ended)
-- **Audio System**: Comprehensive audio management with mute/unmute functionality
-- **3D Rendering**: React Three Fiber setup with post-processing effects
-- **UI Interface**: Game controls, score display, and interactive elements
+- **Game State Management**: JavaScript GameState class managing game phases (ready, playing, ended)
+- **Audio System**: AudioManager class with mute/unmute functionality and sound effects
+- **2D Rendering**: HTML5 Canvas rendering with gradient effects and particles
+- **UI Interface**: CSS-based overlay with game controls, score display, and start/game over screens
 
 ## Database Schema
 - **Users Table**: Basic user management with username/password authentication
@@ -83,6 +83,7 @@ The application is configured for deployment on Replit with autoscale capabiliti
 
 Changelog:
 - June 20, 2025. Initial setup
+- July 20, 2025. Converted from React/Three.js to pure HTML/CSS/JS architecture for better compatibility and simpler deployment
 
 # User Preferences
 

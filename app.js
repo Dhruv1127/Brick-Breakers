@@ -17,16 +17,23 @@ const GAME_CONFIG = {
         width: 75,
         height: 20,
         padding: 5,
-        rows: 5,
-        cols: 10,
-        colors: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7']
+        colors: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#ff9f43']
+    },
+    levels: {
+        1: { name: 'EASY', rows: 3, cols: 8, ballSpeed: 4, paddleSpeed: 8 },
+        2: { name: 'MEDIUM', rows: 4, cols: 9, ballSpeed: 5, paddleSpeed: 8 },
+        3: { name: 'HARD', rows: 5, cols: 10, ballSpeed: 6, paddleSpeed: 7 },
+        4: { name: 'EXPERT', rows: 6, cols: 11, ballSpeed: 7, paddleSpeed: 7 },
+        5: { name: 'MASTER', rows: 7, cols: 12, ballSpeed: 8, paddleSpeed: 6 },
+        6: { name: 'LEGEND', rows: 8, cols: 13, ballSpeed: 9, paddleSpeed: 6 }
     }
 };
 
 // Game State
 class GameState {
     constructor() {
-        this.phase = 'ready'; // ready, playing, ended
+        this.phase = 'home'; // home, levelSelect, ready, playing, ended
+        this.currentLevel = 1;
         this.score = 0;
         this.lives = 3;
         this.paddle = {
@@ -42,20 +49,28 @@ class GameState {
         this.bricks = [];
         this.keys = {};
         this.isMuted = true;
+        this.completedLevels = [];
         
         this.initializeBricks();
     }
     
     initializeBricks() {
         this.bricks = [];
-        for (let row = 0; row < GAME_CONFIG.brick.rows; row++) {
-            for (let col = 0; col < GAME_CONFIG.brick.cols; col++) {
+        const level = GAME_CONFIG.levels[this.currentLevel];
+        const rows = level.rows;
+        const cols = level.cols;
+        
+        const totalWidth = cols * GAME_CONFIG.brick.width + (cols - 1) * GAME_CONFIG.brick.padding;
+        const startX = (GAME_CONFIG.width - totalWidth) / 2;
+        
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
                 const brick = {
-                    x: col * (GAME_CONFIG.brick.width + GAME_CONFIG.brick.padding) + 40,
-                    y: row * (GAME_CONFIG.brick.height + GAME_CONFIG.brick.padding) + 60,
+                    x: startX + col * (GAME_CONFIG.brick.width + GAME_CONFIG.brick.padding),
+                    y: 60 + row * (GAME_CONFIG.brick.height + GAME_CONFIG.brick.padding),
                     width: GAME_CONFIG.brick.width,
                     height: GAME_CONFIG.brick.height,
-                    color: GAME_CONFIG.brick.colors[row],
+                    color: GAME_CONFIG.brick.colors[row % GAME_CONFIG.brick.colors.length],
                     destroyed: false
                 };
                 this.bricks.push(brick);
@@ -67,14 +82,42 @@ class GameState {
         this.score = 0;
         this.lives = 3;
         this.paddle.x = GAME_CONFIG.width / 2 - GAME_CONFIG.paddle.width / 2;
+        const level = GAME_CONFIG.levels[this.currentLevel];
         this.ball = {
             x: GAME_CONFIG.width / 2,
             y: GAME_CONFIG.height - 60,
-            dx: GAME_CONFIG.ball.speed * 0.6,
-            dy: -GAME_CONFIG.ball.speed * 0.8
+            dx: level.ballSpeed * 0.6,
+            dy: -level.ballSpeed * 0.8
         };
         this.initializeBricks();
         this.phase = 'ready';
+    }
+    
+    setLevel(levelNumber) {
+        this.currentLevel = levelNumber;
+        this.resetGame();
+    }
+    
+    goToHome() {
+        this.phase = 'home';
+    }
+    
+    goToLevelSelect() {
+        this.phase = 'levelSelect';
+    }
+    
+    completeLevel() {
+        if (!this.completedLevels.includes(this.currentLevel)) {
+            this.completedLevels.push(this.currentLevel);
+        }
+        
+        // Check if there's a next level
+        if (this.currentLevel < Object.keys(GAME_CONFIG.levels).length) {
+            this.currentLevel++;
+            this.resetGame();
+        } else {
+            this.phase = 'ended';
+        }
     }
     
     start() {
@@ -249,7 +292,7 @@ class Game {
                 e.preventDefault();
                 if (this.state.phase === 'ready') {
                     this.state.start();
-                    this.hideStartScreen();
+                    this.hideAllScreens();
                 }
             }
             
@@ -262,16 +305,57 @@ class Game {
             this.state.keys[e.code] = false;
         });
         
-        // Button events
-        document.getElementById('startBtn').addEventListener('click', () => {
-            this.state.start();
-            this.hideStartScreen();
+        // Home screen events
+        document.getElementById('startGameBtn').addEventListener('click', () => {
+            this.state.setLevel(1);
+            this.showStartScreen();
         });
         
+        document.getElementById('levelsBtn').addEventListener('click', () => {
+            this.state.goToLevelSelect();
+            this.showLevelScreen();
+        });
+        
+        document.getElementById('quitBtn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to quit the game?')) {
+                window.close();
+            }
+        });
+        
+        // Level selection events
+        document.querySelectorAll('.level-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const level = parseInt(btn.dataset.level);
+                if (!btn.classList.contains('locked')) {
+                    this.state.setLevel(level);
+                    this.updateLevelInfo();
+                    this.showStartScreen();
+                }
+            });
+        });
+        
+        document.getElementById('backToHomeBtn').addEventListener('click', () => {
+            this.state.goToHome();
+            this.showHomeScreen();
+        });
+        
+        // Start screen events
+        document.getElementById('startBtn').addEventListener('click', () => {
+            this.state.start();
+            this.hideAllScreens();
+        });
+        
+        document.getElementById('backToLevelsBtn').addEventListener('click', () => {
+            this.state.goToLevelSelect();
+            this.showLevelScreen();
+        });
+        
+        // Game over screen events
         document.getElementById('restartBtn').addEventListener('click', () => {
             this.restartGame();
         });
         
+        // Mute button
         document.getElementById('muteBtn').addEventListener('click', () => {
             this.audio.toggleMute();
         });
@@ -294,8 +378,28 @@ class Game {
         }
     }
     
-    hideStartScreen() {
+    hideAllScreens() {
+        document.getElementById('homeScreen').classList.add('hidden');
+        document.getElementById('levelScreen').classList.add('hidden');
         document.getElementById('startScreen').classList.add('hidden');
+        document.getElementById('gameOverScreen').classList.add('hidden');
+    }
+    
+    showHomeScreen() {
+        this.hideAllScreens();
+        document.getElementById('homeScreen').classList.remove('hidden');
+    }
+    
+    showLevelScreen() {
+        this.hideAllScreens();
+        document.getElementById('levelScreen').classList.remove('hidden');
+        this.updateLevelButtons();
+    }
+    
+    showStartScreen() {
+        this.hideAllScreens();
+        document.getElementById('startScreen').classList.remove('hidden');
+        this.updateLevelInfo();
     }
     
     showGameOverScreen() {
@@ -303,18 +407,27 @@ class Game {
         document.getElementById('gameOverScreen').classList.remove('hidden');
     }
     
-    hideGameOverScreen() {
-        document.getElementById('gameOverScreen').classList.add('hidden');
+    updateLevelInfo() {
+        const level = GAME_CONFIG.levels[this.state.currentLevel];
+        document.getElementById('currentLevel').textContent = this.state.currentLevel;
+        document.getElementById('currentLevelName').textContent = level.name;
     }
     
-    showStartScreen() {
-        document.getElementById('startScreen').classList.remove('hidden');
+    updateLevelButtons() {
+        const buttons = document.querySelectorAll('.level-btn');
+        buttons.forEach((btn, index) => {
+            const levelNum = index + 1;
+            if (levelNum <= this.state.currentLevel || this.state.completedLevels.includes(levelNum)) {
+                btn.classList.remove('locked');
+            } else {
+                btn.classList.add('locked');
+            }
+        });
     }
     
     restartGame() {
         this.state.resetGame();
-        this.hideGameOverScreen();
-        this.showStartScreen();
+        this.showHomeScreen();
         this.updateScore();
         this.updateLives();
     }
@@ -331,13 +444,14 @@ class Game {
         if (this.state.phase !== 'playing') return;
         
         // Paddle movement
+        const level = GAME_CONFIG.levels[this.state.currentLevel];
         if (this.state.keys['ArrowLeft'] || this.state.keys['KeyA']) {
-            this.state.paddle.x = Math.max(0, this.state.paddle.x - GAME_CONFIG.paddle.speed);
+            this.state.paddle.x = Math.max(0, this.state.paddle.x - level.paddleSpeed);
         }
         if (this.state.keys['ArrowRight'] || this.state.keys['KeyD']) {
             this.state.paddle.x = Math.min(
                 GAME_CONFIG.width - GAME_CONFIG.paddle.width,
-                this.state.paddle.x + GAME_CONFIG.paddle.speed
+                this.state.paddle.x + level.paddleSpeed
             );
         }
         
@@ -396,10 +510,11 @@ class Game {
             
             if (this.state.lives > 0) {
                 // Reset ball position
+                const level = GAME_CONFIG.levels[this.state.currentLevel];
                 this.state.ball.x = GAME_CONFIG.width / 2;
                 this.state.ball.y = GAME_CONFIG.height - 60;
-                this.state.ball.dx = GAME_CONFIG.ball.speed * 0.6;
-                this.state.ball.dy = -GAME_CONFIG.ball.speed * 0.8;
+                this.state.ball.dx = level.ballSpeed * 0.6;
+                this.state.ball.dy = -level.ballSpeed * 0.8;
             } else {
                 this.state.end();
                 this.showGameOverScreen();
@@ -409,8 +524,12 @@ class Game {
         // Check for win condition
         const remainingBricks = this.state.bricks.filter(brick => !brick.destroyed);
         if (remainingBricks.length === 0) {
-            this.state.end();
-            this.showGameOverScreen();
+            this.state.completeLevel();
+            if (this.state.phase === 'ended') {
+                this.showGameOverScreen();
+            } else {
+                this.showStartScreen();
+            }
         }
     }
     

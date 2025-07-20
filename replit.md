@@ -87,3 +87,5 @@ Changelog:
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
+UI/UX Style: Ultra HD quality with advanced animations, particle effects, and premium visual design.
+Design Requirements: Advanced level selection, glass morphism effects, gradient animations, and modern gaming aesthetics.

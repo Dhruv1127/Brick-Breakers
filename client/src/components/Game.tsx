@@ -306,17 +306,47 @@ export default function Game() {
 
   return (
     <group>
-      {/* Atmospheric background */}
+      {/* Ultra HD Atmospheric background */}
       <mesh position={[0, 0, -2]} rotation={[0, 0, 0]}>
         <planeGeometry args={[GAME_WIDTH * 2, GAME_HEIGHT * 2]} />
         <meshStandardMaterial 
           color="#001122"
           transparent
-          opacity={0.7}
-          emissive="#001133"
-          emissiveIntensity={0.1}
+          opacity={0.8}
+          emissive="#002244"
+          emissiveIntensity={0.2}
+          metalness={0.1}
+          roughness={0.8}
         />
       </mesh>
+
+      {/* Ultra HD Background grid pattern */}
+      <group position={[0, 0, -1.5]}>
+        {Array.from({ length: 20 }).map((_, i) => (
+          <mesh key={`grid-v-${i}`} position={[(-GAME_WIDTH/2) + (i * GAME_WIDTH/19), 0, 0]}>
+            <planeGeometry args={[0.02, GAME_HEIGHT * 2]} />
+            <meshStandardMaterial 
+              color="#004488"
+              transparent
+              opacity={0.15}
+              emissive="#004488"
+              emissiveIntensity={0.1}
+            />
+          </mesh>
+        ))}
+        {Array.from({ length: 16 }).map((_, i) => (
+          <mesh key={`grid-h-${i}`} position={[0, (-GAME_HEIGHT/2) + (i * GAME_HEIGHT/15), 0]}>
+            <planeGeometry args={[GAME_WIDTH * 2, 0.02]} />
+            <meshStandardMaterial 
+              color="#004488"
+              transparent
+              opacity={0.15}
+              emissive="#004488"
+              emissiveIntensity={0.1}
+            />
+          </mesh>
+        ))}
+      </group>
 
       {/* Game components */}
       <Paddle 

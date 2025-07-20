@@ -307,11 +307,6 @@ class Game {
         
         // Home screen events
         document.getElementById('startGameBtn').addEventListener('click', () => {
-            this.state.setLevel(1);
-            this.showStartScreen();
-        });
-        
-        document.getElementById('levelsBtn').addEventListener('click', () => {
             this.state.goToLevelSelect();
             this.showLevelScreen();
         });

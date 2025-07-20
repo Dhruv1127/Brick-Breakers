@@ -29,6 +29,7 @@
                     <div class="particle-effects"></div>
                     <div class="menu-options">
                         <button id="startGameBtn" class="menu-btn">START GAME</button>
+                        <button id="settingsBtn" class="menu-btn">SETTINGS</button>
                         <button id="quitBtn" class="menu-btn quit-btn">QUIT GAME</button>
                     </div>
                 </div>
@@ -64,7 +65,51 @@
                             <span class="level-name">LEGEND</span>
                         </button>
                     </div>
-                    <button id="backToHomeBtn" class="back-btn">BACK TO MAIN MENU</button>
+                    <div class="level-buttons">
+                        <button id="backToHomeBtn" class="back-btn">BACK TO MAIN MENU</button>
+                        <button id="homeFromLevelsBtn" class="home-btn">HOME</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Screen -->
+            <div id="settingsScreen" class="settings-screen hidden">
+                <div class="settings-content">
+                    <h2 class="settings-title">GAME SETTINGS</h2>
+                    <div class="settings-options">
+                        <div class="setting-item">
+                            <label for="soundToggle" class="setting-label">Sound Effects:</label>
+                            <button id="soundToggle" class="setting-toggle">ON</button>
+                        </div>
+                        <div class="setting-item">
+                            <label for="difficultySelect" class="setting-label">Default Difficulty:</label>
+                            <select id="difficultySelect" class="setting-select">
+                                <option value="1">Easy</option>
+                                <option value="2">Medium</option>
+                                <option value="3">Hard</option>
+                                <option value="4">Expert</option>
+                                <option value="5">Master</option>
+                                <option value="6">Legend</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label for="gameSpeed" class="setting-label">Game Speed:</label>
+                            <input type="range" id="gameSpeed" class="setting-slider" min="0.5" max="2" step="0.1" value="1">
+                            <span id="speedValue" class="setting-value">1.0x</span>
+                        </div>
+                        <div class="setting-item">
+                            <label for="controlsType" class="setting-label">Controls:</label>
+                            <select id="controlsType" class="setting-select">
+                                <option value="keyboard">Keyboard Only</option>
+                                <option value="mouse">Mouse Only</option>
+                                <option value="both">Keyboard + Mouse</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="settings-buttons">
+                        <button id="resetSettingsBtn" class="reset-btn">RESET TO DEFAULT</button>
+                        <button id="backToHomeFromSettings" class="back-btn">BACK TO MAIN MENU</button>
+                    </div>
                 </div>
             </div>
 
@@ -78,7 +123,10 @@
                         <p>Break all bricks to advance!</p>
                     </div>
                     <button id="startBtn" class="start-btn">START LEVEL</button>
-                    <button id="backToLevelsBtn" class="back-btn">BACK TO LEVELS</button>
+                    <div class="start-buttons">
+                        <button id="backToLevelsBtn" class="back-btn">BACK TO LEVELS</button>
+                        <button id="homeFromStartBtn" class="home-btn">HOME</button>
+                    </div>
                 </div>
             </div>
             
@@ -87,7 +135,10 @@
                 <div class="game-over-content">
                     <h2 class="game-over-title">GAME OVER</h2>
                     <div class="final-score">Final Score: <span id="finalScore">0</span></div>
-                    <button id="restartBtn" class="restart-btn">PLAY AGAIN</button>
+                    <div class="game-over-buttons">
+                        <button id="restartBtn" class="restart-btn">PLAY AGAIN</button>
+                        <button id="homeFromGameOverBtn" class="home-btn">HOME</button>
+                    </div>
                 </div>
             </div>
         </div>

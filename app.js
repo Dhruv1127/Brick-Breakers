@@ -50,6 +50,12 @@ class GameState {
         this.keys = {};
         this.isMuted = true;
         this.completedLevels = [];
+        this.settings = {
+            soundEnabled: true,
+            defaultDifficulty: 1,
+            gameSpeed: 1.0,
+            controlsType: 'keyboard'
+        };
         
         this.initializeBricks();
     }
@@ -311,6 +317,10 @@ class Game {
             this.showLevelScreen();
         });
         
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            this.showSettingsScreen();
+        });
+        
         document.getElementById('quitBtn').addEventListener('click', () => {
             if (confirm('Are you sure you want to quit the game?')) {
                 window.close();
@@ -334,6 +344,11 @@ class Game {
             this.showHomeScreen();
         });
         
+        document.getElementById('homeFromLevelsBtn').addEventListener('click', () => {
+            this.state.goToHome();
+            this.showHomeScreen();
+        });
+        
         // Start screen events
         document.getElementById('startBtn').addEventListener('click', () => {
             this.state.start();
@@ -345,9 +360,45 @@ class Game {
             this.showLevelScreen();
         });
         
+        document.getElementById('homeFromStartBtn').addEventListener('click', () => {
+            this.state.goToHome();
+            this.showHomeScreen();
+        });
+        
         // Game over screen events
         document.getElementById('restartBtn').addEventListener('click', () => {
             this.restartGame();
+        });
+        
+        document.getElementById('homeFromGameOverBtn').addEventListener('click', () => {
+            this.state.goToHome();
+            this.showHomeScreen();
+        });
+        
+        // Settings screen events
+        document.getElementById('backToHomeFromSettings').addEventListener('click', () => {
+            this.state.goToHome();
+            this.showHomeScreen();
+        });
+        
+        document.getElementById('soundToggle').addEventListener('click', () => {
+            this.toggleSoundSetting();
+        });
+        
+        document.getElementById('gameSpeed').addEventListener('input', (e) => {
+            this.updateGameSpeed(parseFloat(e.target.value));
+        });
+        
+        document.getElementById('difficultySelect').addEventListener('change', (e) => {
+            this.state.settings.defaultDifficulty = parseInt(e.target.value);
+        });
+        
+        document.getElementById('controlsType').addEventListener('change', (e) => {
+            this.state.settings.controlsType = e.target.value;
+        });
+        
+        document.getElementById('resetSettingsBtn').addEventListener('click', () => {
+            this.resetSettings();
         });
         
         // Mute button
@@ -376,6 +427,7 @@ class Game {
     hideAllScreens() {
         document.getElementById('homeScreen').classList.add('hidden');
         document.getElementById('levelScreen').classList.add('hidden');
+        document.getElementById('settingsScreen').classList.add('hidden');
         document.getElementById('startScreen').classList.add('hidden');
         document.getElementById('gameOverScreen').classList.add('hidden');
     }
@@ -395,6 +447,12 @@ class Game {
         this.hideAllScreens();
         document.getElementById('startScreen').classList.remove('hidden');
         this.updateLevelInfo();
+    }
+    
+    showSettingsScreen() {
+        this.hideAllScreens();
+        document.getElementById('settingsScreen').classList.remove('hidden');
+        this.updateSettingsDisplay();
     }
     
     showGameOverScreen() {
@@ -418,6 +476,53 @@ class Game {
                 btn.classList.add('locked');
             }
         });
+    }
+    
+    updateSettingsDisplay() {
+        // Update sound toggle
+        const soundToggle = document.getElementById('soundToggle');
+        soundToggle.textContent = this.state.settings.soundEnabled ? 'ON' : 'OFF';
+        soundToggle.classList.toggle('off', !this.state.settings.soundEnabled);
+        
+        // Update difficulty select
+        document.getElementById('difficultySelect').value = this.state.settings.defaultDifficulty;
+        
+        // Update game speed
+        document.getElementById('gameSpeed').value = this.state.settings.gameSpeed;
+        document.getElementById('speedValue').textContent = this.state.settings.gameSpeed.toFixed(1) + 'x';
+        
+        // Update controls select
+        document.getElementById('controlsType').value = this.state.settings.controlsType;
+    }
+    
+    toggleSoundSetting() {
+        this.state.settings.soundEnabled = !this.state.settings.soundEnabled;
+        this.updateSettingsDisplay();
+        
+        // Also toggle the actual audio mute state
+        this.audio.isMuted = !this.state.settings.soundEnabled;
+        const muteBtn = document.getElementById('muteBtn');
+        muteBtn.textContent = this.audio.isMuted ? '🔇 Sound Off' : '🔊 Sound On';
+    }
+    
+    updateGameSpeed(speed) {
+        this.state.settings.gameSpeed = speed;
+        document.getElementById('speedValue').textContent = speed.toFixed(1) + 'x';
+    }
+    
+    resetSettings() {
+        this.state.settings = {
+            soundEnabled: true,
+            defaultDifficulty: 1,
+            gameSpeed: 1.0,
+            controlsType: 'keyboard'
+        };
+        this.updateSettingsDisplay();
+        
+        // Reset audio state
+        this.audio.isMuted = false;
+        const muteBtn = document.getElementById('muteBtn');
+        muteBtn.textContent = '🔊 Sound On';
     }
     
     restartGame() {
